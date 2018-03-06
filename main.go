@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/1414C/sluggo/wssrv"
 	"sync"
+
+	"github.com/1414C/sluggo/wssrv"
 )
 
 func main() {
@@ -20,6 +21,6 @@ func main() {
 	// the main go routine, thereby allowing sv.Serve(...) to run.
 	wg.Add(1)
 	fmt.Println("starting cache server...")
-	sv.Serve(":7070")
+	sv.Serve(":7070", 0)
 	wg.Wait()
 }

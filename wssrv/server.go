@@ -4,9 +4,10 @@ import (
 	"bytes"
 	"encoding/gob"
 	"fmt"
-	"github.com/1414C/sluggo/wscom"
 	"log"
 	"net/http"
+
+	"github.com/1414C/sluggo/wscom"
 
 	"golang.org/x/net/websocket"
 )
@@ -22,7 +23,7 @@ type CacheServInt interface {
 
 	processCmdChannel()
 	SetHandler(a wscom.Article) error
-	Serve(port uint)
+	Serve(port uint, leader uint64)
 	IsAlive() bool
 }
 
@@ -37,7 +38,12 @@ type CacheServ struct {
 }
 
 // init an empty cache server
-func (cs *CacheServ) init() error {
+func (cs *CacheServ) init(leaderID uint64, leaderAddr string) error {
+
+	// initialize the common parts
+	wscom.Init(leaderID, leaderAddr)
+
+	// initialize the cachemap and io channels
 	if cs.cacheMap == nil {
 		cs.cacheMap = make(map[string]wscom.Article)
 
@@ -144,9 +150,11 @@ func (cs *CacheServ) invalidate(key string) error {
 	return fmt.Errorf("cache not initialized - call Init() first")
 }
 
-// Serve starts the cache server
-func (cs *CacheServ) Serve(port string) {
-	err := cs.init()
+// Accept a closure that retrieves the leader and leader IP?
+
+// Serve starts the cache server, leader == 0 means no leader - I am the leader
+func (cs *CacheServ) Serve(port string, leaderID uint64, leaderAddr string) {
+	err := cs.init(leaderID, leaderAddr)
 	if err != nil {
 		panic("Serve()" + err.Error())
 	}
