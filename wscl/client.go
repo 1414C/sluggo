@@ -4,9 +4,10 @@ import (
 	"bytes"
 	"encoding/gob"
 	"fmt"
+	"log"
+
 	"github.com/1414C/sluggo/wscom"
 	"golang.org/x/net/websocket"
-	"log"
 )
 
 // AddUpdCacheEntry adds or updates a cache entry using the value of interface i
@@ -48,7 +49,7 @@ func AddUpdCacheEntry(key string, i interface{}) error {
 
 	// connect to remote server
 	origin := "http://localhost/"
-	url := "ws://192.168.1.79:7070/set"
+	url := "ws://192.168.1.73:7070/set"
 	ws, err := websocket.Dial(url, "", origin)
 	if err != nil {
 		log.Println("AddUpdCacheEntry() ws connection failed - got:", err)
@@ -110,7 +111,7 @@ func GetCacheEntry(key string, i interface{}) error {
 	encArticle := encBuf.Bytes()
 
 	origin := "http://localhost/"
-	url := "ws://192.168.1.79:7070/get"
+	url := "ws://192.168.1.73:7070/get"
 
 	ws, err := websocket.Dial(url, "", origin)
 	if err != nil {
