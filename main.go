@@ -21,6 +21,6 @@ func main() {
 	// the main go routine, thereby allowing sv.Serve(...) to run.
 	wg.Add(1)
 	fmt.Println("starting cache server...")
-	sv.Serve(":7070", 0)
+	sv.Serve(":7070")
 	wg.Wait()
 }

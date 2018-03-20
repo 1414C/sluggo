@@ -38,10 +38,9 @@ type CacheServ struct {
 }
 
 // init an empty cache server
-func (cs *CacheServ) init(leaderID uint64, leaderAddr string) error {
+func (cs *CacheServ) init() error {
 
 	// initialize the common parts
-	wscom.Init(leaderID, leaderAddr)
 
 	// initialize the cachemap and io channels
 	if cs.cacheMap == nil {
@@ -152,9 +151,9 @@ func (cs *CacheServ) invalidate(key string) error {
 
 // Accept a closure that retrieves the leader and leader IP?
 
-// Serve starts the cache server, leader == 0 means no leader - I am the leader
-func (cs *CacheServ) Serve(port string, leaderID uint64, leaderAddr string) {
-	err := cs.init(leaderID, leaderAddr)
+// Serve starts the cache server
+func (cs *CacheServ) Serve(port string) {
+	err := cs.init()
 	if err != nil {
 		panic("Serve()" + err.Error())
 	}

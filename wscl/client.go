@@ -169,5 +169,48 @@ func GetCacheEntry(key string, i interface{}) error {
 // standpoint.
 func RemoveCacheEntry(key string) error {
 
+	// create an Article shell
+	a := wscom.Article{
+		Key:   key,
+		Op:    "D",
+		Valid: false,
+		Value: nil,
+		Type:  "",
+	}
+
+	// gob-encode the Article shell
+	encBuf := new(bytes.Buffer)
+	err := gob.NewEncoder(encBuf).Encode(a)
+	if err != nil {
+		log.Fatalf("DELETE gob failed to encode the Article Shell")
+	}
+	value := encBuf.Bytes()
+
+	origin := "http://localhost/"
+	url := "ws://192.168.1.73:7070/delete"
+
+	ws, err := websocket.Dial(url, "", origin)
+	if err != nil {
+		log.Println("GetCacheEntry() failed to make websocket connection with cache - got:", err)
+		return err
+	}
+
+	// push the encoded Article (command Op=='D' is what counts here)
+	_, err = ws.Write(value)
+	if err != nil {
+		log.Fatal("DELETE ws.Write error:", err)
+	}
+	var msg = make([]byte, 1024)
+
+	// read the bool result from the ws
+	n, err := ws.Read(msg)
+	if err != nil {
+		log.Fatal("ws.Read error:", err)
+	}
+
+	// if delete is confirmed, update local cache
+	if string(msg[:n]) != "true" {
+		log.Println("Article deletion failed")
+	}
 	return nil
 }
