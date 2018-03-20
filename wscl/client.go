@@ -49,7 +49,7 @@ func AddUpdCacheEntry(key string, i interface{}) error {
 
 	// connect to remote server
 	origin := "http://localhost/"
-	url := "ws://192.168.1.73:7070/set"
+	url := "ws://192.168.1.82:7070/set"
 	ws, err := websocket.Dial(url, "", origin)
 	if err != nil {
 		log.Println("AddUpdCacheEntry() ws connection failed - got:", err)
@@ -111,7 +111,7 @@ func GetCacheEntry(key string, i interface{}) error {
 	encArticle := encBuf.Bytes()
 
 	origin := "http://localhost/"
-	url := "ws://192.168.1.73:7070/get"
+	url := "ws://192.168.1.82:7070/get"
 
 	ws, err := websocket.Dial(url, "", origin)
 	if err != nil {
@@ -187,7 +187,7 @@ func RemoveCacheEntry(key string) error {
 	value := encBuf.Bytes()
 
 	origin := "http://localhost/"
-	url := "ws://192.168.1.73:7070/delete"
+	url := "ws://192.168.1.82:7070/delete"
 
 	ws, err := websocket.Dial(url, "", origin)
 	if err != nil {
