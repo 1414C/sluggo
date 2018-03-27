@@ -18,7 +18,7 @@ import (
 // f := Foo{F1: "value1", F2: "value2",}
 // k := "myUniqueKey1234"
 // err := AddUpdCacheEntry(k,f)
-func AddUpdCacheEntry(key string, i interface{}) error {
+func AddUpdCacheEntry(key string, i interface{}, address string) error {
 
 	// first gob encode the data
 	encBuf := new(bytes.Buffer)
@@ -49,7 +49,7 @@ func AddUpdCacheEntry(key string, i interface{}) error {
 
 	// connect to remote server
 	origin := "http://localhost/"
-	url := "ws://192.168.1.82:7070/set"
+	url := "ws://" + address + "/set"
 	ws, err := websocket.Dial(url, "", origin)
 	if err != nil {
 		log.Println("AddUpdCacheEntry() ws connection failed - got:", err)
@@ -91,7 +91,7 @@ func AddUpdCacheEntry(key string, i interface{}) error {
 //
 // followng the call, f will contain the cached value of the Foo{} type if
 // the read was successful.
-func GetCacheEntry(key string, i interface{}) error {
+func GetCacheEntry(key string, i interface{}, address string) error {
 
 	// create an Article shell
 	a := wscom.Article{
@@ -111,7 +111,7 @@ func GetCacheEntry(key string, i interface{}) error {
 	encArticle := encBuf.Bytes()
 
 	origin := "http://localhost/"
-	url := "ws://192.168.1.82:7070/get"
+	url := "ws://" + address + "/get"
 
 	ws, err := websocket.Dial(url, "", origin)
 	if err != nil {
@@ -167,7 +167,7 @@ func GetCacheEntry(key string, i interface{}) error {
 // is deemd to be in the correct state.  An error will be returned only if
 // the function was not able to complete the operation from a technical
 // standpoint.
-func RemoveCacheEntry(key string) error {
+func RemoveCacheEntry(key string, address string) error {
 
 	// create an Article shell
 	a := wscom.Article{
@@ -187,7 +187,7 @@ func RemoveCacheEntry(key string) error {
 	value := encBuf.Bytes()
 
 	origin := "http://localhost/"
-	url := "ws://192.168.1.82:7070/delete"
+	url := "ws://" + address + "/delete"
 
 	ws, err := websocket.Dial(url, "", origin)
 	if err != nil {
