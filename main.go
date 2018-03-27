@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"sync"
 
@@ -8,6 +9,9 @@ import (
 )
 
 func main() {
+
+	a := flag.String("a", "127.0.0.1:7070", "address:port that sluggo will accept ws connections on")
+	flag.Parse()
 
 	wg := sync.WaitGroup{}
 	sv := wssrv.CacheServ{}
@@ -20,7 +24,7 @@ func main() {
 	// the http/rpc handler would then start its own ListenAndServe on
 	// the main go routine, thereby allowing sv.Serve(...) to run.
 	wg.Add(1)
-	fmt.Println("starting cache server...")
-	sv.Serve(":7070")
+	fmt.Printf("starting cache server on %s ...\n", *a)
+	sv.Serve(*a)
 	wg.Wait()
 }
