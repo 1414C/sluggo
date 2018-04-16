@@ -217,7 +217,7 @@ func (cs *CacheServ) SetHandler(ws *websocket.Conn) {
 		// fmt.Println("KEY MATCH")
 		// fmt.Println("a2.Key:", a2.Key)
 		// fmt.Println("a.Key: ", a.Key)
-		log.Printf("Add/Update of Article %s succeeded\n", a.Key)
+		log.Printf("Add/Update of Article %v succeeded\n", a)
 	} else {
 		log.Println()
 		log.Println()
