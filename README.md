@@ -1,39 +1,27 @@
 # sluggo
 
+## What is this?
+Sluggo is a simple cache server with a very simple API, no automatic eviction and no high-watermark for memory usage.  Sluggo uses string keys for clarity, but this should probably be updated internally to use something xxhash to create unique uint64 keys for speed(?) and key structure consistency.
+
+## Use
+go run -race main.go -a 192.168.1.40:7070
+
+## API
+The caller API is contained in the wscl package and consists of three discrete functions as shown in the following code snippet:
+```golang
+
+    func AddUpdCacheEntry(key string, i interface{}, address string) error {}
+    func GetCacheEntry(key string, i interface{}, address string) error {}
+    func RemoveCacheEntry(key string, address string) error {}
+
+```
+
+Interface{} is used as a passing/receiving reference-type parameter in order to allow any data to be placed into the cache.  It is the reponsibility of the caller to determine the best way to use the API. i.e. call with a static-type, or call with interface-type (read-case) and then perform a type-assertion.
+
 - consider multicast like memcached?
 
 https://gist.github.com/scottjbarr/255828
 
 https://github.com/memcached/memcached/wiki
 
-
-## model after zookeeper
-
-Pc = process coordinator
-
-- each new server assigns itself the highest id in the group (Pc + 1)
-- new servers will have to read the id of the current coordinator from the db
-- if the field is empty the server should write its own id (1) into the current coordinator db table
-
-- at all times, the highest-id server petitions to be elected as the leader with the exception of joining servers
-
-- each process monitors its next highest process neighbour by id
-
-- timeout?
-- check again
-- timeout2?
-    - remove successor and add old successor's successor as my successor updating topology map
-    - was old successor the Pc?
-        - yes - set flag and attempt to reach new successor (HB)  (recurse to top)
-        - no  - clear flag and attempt to read new successor (HB) (recurse to top)
-
-    - when a new successor is reachable
-        - replacing the Pc     - send ELECTION MyPID (with updated topology map?)
-        - not replacing the Pc - send REMOVE []OldSuccessorPID (with updated topology map?)
-
-
-    - ELECTION - OriginPID = MyPID
-    - Mnemonic == 'ELECTION'
-        - send to sucessor
-        - ...
 
