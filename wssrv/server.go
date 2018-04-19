@@ -4,27 +4,30 @@ import (
 	"bytes"
 	"encoding/gob"
 	"fmt"
+	"github.com/1414C/sluggo/wscom"
+	"golang.org/x/net/websocket"
 	"log"
 	"net/http"
-
-	"github.com/1414C/sluggo/wscom"
-
-	"golang.org/x/net/websocket"
 )
 
 // CacheServInt outlines the cache server interface
 type CacheServInt interface {
-	Init() error
 	initAndSet(as []wscom.Article) error
 	set(a wscom.Article) error // ok?
 	get(a *wscom.Article) error
 	invalidate(key string) error
 	flush() error
-
 	processCmdChannel()
-	SetHandler(a wscom.Article) error
 	Serve(port uint, leader uint64)
-	IsAlive() bool
+}
+
+// CacheServHandlerInt outlines the cache server websocket handlers
+type CacheServHandlerInt interface {
+	SetHandler(a wscom.Article) error
+	GetHandler(ws *websocket.Conn)
+	DeleteHandler(ws *websocket.Conn)
+	FlushHandler(ws *websocket.Conn)
+	IsAliveHandler(ws *websocket.Conn)
 }
 
 // CacheServ is the server access struct
@@ -35,6 +38,7 @@ type CacheServ struct {
 	count      int
 	HTTPServer *http.Server
 	CacheServInt
+	CacheServHandlerInt
 }
 
 // init an empty cache server
