@@ -94,9 +94,8 @@ func (cs *CacheServ) processCmdChannel() {
 			cs.cacheMap = make(map[string]wscom.Article)
 			log.Printf("cs.cacheMap contains %d entries\n", len(cs.cacheMap))
 			cs.chout <- v
-		default:
+			// default:
 			// do nothing
-
 		}
 	}
 }
@@ -169,8 +168,6 @@ func (cs *CacheServ) Serve(port string) {
 	mux.Handle("/flush", websocket.Handler(cs.FlushHandler))
 	mux.Handle("/isalive", websocket.Handler(cs.IsAliveHandler))
 
-	// http.Handle("/set", websocket.Handler(cs.SetHandler))
-	// http.Handle("/get", websocket.Handler(cs.GetHandler))
 	fmt.Printf("listening for ws traffic on %s\n", port)
 
 	// create the ws server - this can be stopped by calling cs.httpServer.Shutdown(...)
@@ -196,7 +193,6 @@ func (cs *CacheServ) SetHandler(ws *websocket.Conn) {
 	var msg = make([]byte, 1024)
 	l, err := ws.Read(msg)
 	if err != nil {
-		// error thing
 		log.Println("ws.Read() error", err)
 		_, err = ws.Write([]byte("false"))
 		return
@@ -205,7 +201,6 @@ func (cs *CacheServ) SetHandler(ws *websocket.Conn) {
 	decBuf := bytes.NewBuffer(m)
 	err = gob.NewDecoder(decBuf).Decode(&a)
 	if err != nil {
-		// error thing
 		log.Println("gob.Decode() error", err)
 		_, err = ws.Write([]byte("false"))
 		return
@@ -213,14 +208,10 @@ func (cs *CacheServ) SetHandler(ws *websocket.Conn) {
 	// fmt.Println("Article:", a)
 
 	// put the Article command into the channel
-	// cs.addCommand(a)
 	cs.chin <- a
 
 	a2 := <-cs.chout
-	if a2.Key == a.Key {
-		// fmt.Println("KEY MATCH")
-		// fmt.Println("a2.Key:", a2.Key)
-		// fmt.Println("a.Key: ", a.Key)
+	if a2.Key == a.Key { // paranoid
 		log.Printf("Add/Update of Article %v succeeded\n", a)
 	} else {
 		log.Println()
@@ -253,7 +244,6 @@ func (cs *CacheServ) GetHandler(ws *websocket.Conn) {
 	decBuf := bytes.NewBuffer(m)
 	err = gob.NewDecoder(decBuf).Decode(&a)
 	if err != nil {
-		// error thing
 		log.Println("CacheServ.GetHandler() gob.Decode() error - got:", err)
 		_, err = ws.Write([]byte("false"))
 		return
@@ -298,7 +288,6 @@ func (cs *CacheServ) DeleteHandler(ws *websocket.Conn) {
 	var msg = make([]byte, 1024)
 	l, err := ws.Read(msg)
 	if err != nil {
-		// error thing
 		log.Println("ws.Read() error", err)
 		_, err = ws.Write([]byte("false"))
 		return
@@ -307,7 +296,6 @@ func (cs *CacheServ) DeleteHandler(ws *websocket.Conn) {
 	decBuf := bytes.NewBuffer(m)
 	err = gob.NewDecoder(decBuf).Decode(&a)
 	if err != nil {
-		// error thing
 		log.Println("gob.Decode() error", err)
 		_, err = ws.Write([]byte("false"))
 		return
