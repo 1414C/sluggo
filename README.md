@@ -18,4 +18,6 @@ The caller API is contained in the wscl package and consists of three discrete f
 
 ```
 
-Interface{} is used as a passing/receiving reference-type parameter in order to allow any data to be placed into the cache.  It is the responsibility of the caller to determine the best way to use the API. i.e. call with a static-type, or call with interface-type (read-case) and then perform a type-assertion.
+Interface{} is used as a passing/receiving reference-type parameter in order to allow any data to be placed into the cache.  
+It is the responsibility of the caller to determine the best way to use the API. i.e. call with a static-type, or call with interface-type (read-case) and then perform a type-assertion.
+The Sluggo client API establishes a new web-socket connection for each call.  Again; not the sort of thing that would be desirable in a real-world scenario.  It would be simple to adjust the client to hold a connection, but if one were going to make that effort, an effort should also be made to adjust the entire codebase to use the gorilla web-sockets implementation over that of the golang stdlib.  Gorilla does some things better.
